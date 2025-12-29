@@ -146,25 +146,27 @@ feature -- Pixel Access
 		local
 			l_ptr: POINTER
 			l_managed: MANAGED_POINTER
+			l_r, l_g, l_b, l_a: NATURAL_8
 		do
+			l_r := 0
+			l_g := 0
+			l_b := 0
+			l_a := 255
 			l_ptr := c_get_pixel (handle, a_x, a_y)
-			if l_ptr /= default_pointer then
+			if l_ptr /= default_pointer and then channels >= 1 then
 				create l_managed.share_from_pointer (l_ptr, channels)
-				if channels >= 1 then
-					Result := [l_managed.read_natural_8 (0), 0, 0, 255]
-				end
+				l_r := l_managed.read_natural_8 (0)
 				if channels >= 2 then
-					Result := [Result.r, l_managed.read_natural_8 (1), 0, 255]
+					l_g := l_managed.read_natural_8 (1)
 				end
 				if channels >= 3 then
-					Result := [Result.r, Result.g, l_managed.read_natural_8 (2), 255]
+					l_b := l_managed.read_natural_8 (2)
 				end
 				if channels >= 4 then
-					Result := [Result.r, Result.g, Result.b, l_managed.read_natural_8 (3)]
+					l_a := l_managed.read_natural_8 (3)
 				end
-			else
-				Result := [0, 0, 0, 0]
 			end
+			Result := [l_r, l_g, l_b, l_a]
 		end
 
 	set_pixel (a_x, a_y: INTEGER; a_r, a_g, a_b, a_a: NATURAL_8)
@@ -250,8 +252,8 @@ feature -- Fill Operations
 
 feature -- Operations
 
-	copy: STB_IMAGE
-			-- Create a copy of this image.
+	duplicate: STB_IMAGE
+			-- Create a duplicate of this image.
 		require
 			valid: is_valid
 		do
