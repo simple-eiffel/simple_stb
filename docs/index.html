@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>simple_stb - Image Loading Library for Eiffel</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="images/logo.png" alt="simple_* logo" class="logo">
+        </div>
+        <h1>simple_stb</h1>
+        <p class="tagline">Cross-platform Image Loading for Eiffel</p>
+        <div class="badges">
+            <span class="badge badge-version">v1.0.0</span>
+            <span class="badge badge-license">MIT</span>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#quick-start">Quick Start</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#api">API Reference</a></li>
+            <li><a href="https://github.com/simple-eiffel/simple_stb">GitHub</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>
+                <strong>simple_stb</strong> is a production-ready image loading and writing library for Eiffel that wraps
+                the popular <a href="https://github.com/nothings/stb">stb_image</a> library. It provides simple APIs for
+                loading images in multiple formats, pixel manipulation, and saving to various formats with full
+                <strong>Design by Contract</strong> support.
+            </p>
+            <p>
+                Part of the <a href="https://github.com/simple-eiffel">Simple Eiffel</a> ecosystem.
+            </p>
+        </section>
+
+        <section id="quick-start">
+            <h2>Quick Start</h2>
+
+            <h3>Prerequisites</h3>
+            <p>Download stb headers from <a href="https://github.com/nothings/stb">github.com/nothings/stb</a>:</p>
+<pre><code>cd Clib
+curl -O https://raw.githubusercontent.com/nothings/stb/master/stb_image.h
+curl -O https://raw.githubusercontent.com/nothings/stb/master/stb_image_write.h</code></pre>
+
+            <h3>Installation</h3>
+            <ol>
+                <li>Set the environment variable:
+<pre><code>export SIMPLE_EIFFEL=/d/prod</code></pre>
+                </li>
+                <li>Add to your ECF file:
+<pre><code>&lt;library name="simple_stb" location="$SIMPLE_EIFFEL/simple_stb/simple_stb.ecf"/&gt;</code></pre>
+                </li>
+            </ol>
+
+            <h3>Load and Save Images</h3>
+<pre><code><span class="keyword">local</span>
+    stb: <span class="type">SIMPLE_STB</span>
+    img: <span class="type">STB_IMAGE</span>
+<span class="keyword">do</span>
+    <span class="keyword">create</span> stb.make
+
+    <span class="comment">-- Load an image</span>
+    img := stb.load (<span class="string">"photo.jpg"</span>)
+    <span class="keyword">if</span> img.is_valid <span class="keyword">then</span>
+        print (<span class="string">"Size: "</span> + img.width.out + <span class="string">"x"</span> + img.height.out + <span class="string">"%N"</span>)
+
+        <span class="comment">-- Manipulate</span>
+        img.fill_rect (10, 10, 50, 50, 255, 0, 0, 255)  <span class="comment">-- Red rectangle</span>
+
+        <span class="comment">-- Save in different format</span>
+        img.write_png (<span class="string">"photo.png"</span>).do_nothing
+        img.destroy
+    <span class="keyword">else</span>
+        print (<span class="string">"Error: "</span> + img.error_message + <span class="string">"%N"</span>)
+    <span class="keyword">end</span>
+<span class="keyword">end</span></code></pre>
+
+            <h3>Create New Images</h3>
+<pre><code><span class="comment">-- Create new RGBA image</span>
+img := stb.create_rgba (200, 100)
+img.fill_hex (0xFF3498DB)  <span class="comment">-- Blue</span>
+img.write_png (<span class="string">"blue.png"</span>).do_nothing
+img.destroy</code></pre>
+        </section>
+
+        <section id="features">
+            <h2>Key Features</h2>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h4>Multi-Format Loading</h4>
+                    <p>Load PNG, JPEG, BMP, TGA, GIF, PSD, HDR, PIC, and PNM formats.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Multiple Write Formats</h4>
+                    <p>Save images as PNG, JPEG (with quality control), BMP, or TGA.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Pixel Manipulation</h4>
+                    <p>Get and set individual pixels, fill rectangles, fill entire images.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Image Operations</h4>
+                    <p>Duplicate images, flip vertically or horizontally.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Hex Color Support</h4>
+                    <p>Use 0xAARRGGBB or 0xRRGGBB hex color formats for convenience.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h4>Channel Modes</h4>
+                    <p>Support for greyscale, grey+alpha, RGB, and RGBA formats.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="api">
+            <h2>API Reference</h2>
+
+            <div class="api-section">
+                <h3>SIMPLE_STB (Facade)</h3>
+                <p>Factory class for loading and creating images.</p>
+                <div class="signature">load (filename: STRING): STB_IMAGE</div>
+                <div class="signature">load_with_channels (filename: STRING; channels: INTEGER): STB_IMAGE</div>
+                <div class="signature">create_rgb (width, height: INTEGER): STB_IMAGE</div>
+                <div class="signature">create_rgba (width, height: INTEGER): STB_IMAGE</div>
+                <div class="signature">create_greyscale (width, height: INTEGER): STB_IMAGE</div>
+
+                <h4>Channel Constants</h4>
+                <table class="api-table">
+                    <tr><th>Constant</th><th>Value</th><th>Description</th></tr>
+                    <tr><td><code>Channels_auto</code></td><td>0</td><td>Auto-detect from file</td></tr>
+                    <tr><td><code>Channels_grey</code></td><td>1</td><td>Greyscale</td></tr>
+                    <tr><td><code>Channels_grey_alpha</code></td><td>2</td><td>Greyscale with alpha</td></tr>
+                    <tr><td><code>Channels_rgb</code></td><td>3</td><td>RGB (24-bit)</td></tr>
+                    <tr><td><code>Channels_rgba</code></td><td>4</td><td>RGBA (32-bit)</td></tr>
+                </table>
+            </div>
+
+            <div class="api-section">
+                <h3>STB_IMAGE</h3>
+                <p>Image data wrapper with pixel manipulation and file writing.</p>
+
+                <h4>Properties</h4>
+                <div class="signature">width: INTEGER</div>
+                <div class="signature">height: INTEGER</div>
+                <div class="signature">channels: INTEGER</div>
+                <div class="signature">is_valid: BOOLEAN</div>
+                <div class="signature">is_rgb: BOOLEAN</div>
+                <div class="signature">is_rgba: BOOLEAN</div>
+                <div class="signature">error_message: STRING</div>
+
+                <h4>Pixel Access</h4>
+                <div class="signature">pixel (x, y: INTEGER): TUPLE [r, g, b, a: NATURAL_8]</div>
+                <div class="signature">set_pixel (x, y: INTEGER; r, g, b, a: NATURAL_8)</div>
+                <div class="signature">set_pixel_hex (x, y: INTEGER; color: NATURAL_32)</div>
+
+                <h4>Fill Operations</h4>
+                <div class="signature">fill (r, g, b, a: NATURAL_8)</div>
+                <div class="signature">fill_hex (color: NATURAL_32)</div>
+                <div class="signature">fill_rect (x, y, w, h: INTEGER; r, g, b, a: NATURAL_8)</div>
+                <div class="signature">fill_rect_hex (x, y, w, h: INTEGER; color: NATURAL_32)</div>
+
+                <h4>Operations</h4>
+                <div class="signature">duplicate: STB_IMAGE</div>
+                <div class="signature">flip_vertical</div>
+                <div class="signature">flip_horizontal</div>
+
+                <h4>Writing</h4>
+                <div class="signature">write_png (filename: STRING): BOOLEAN</div>
+                <div class="signature">write_bmp (filename: STRING): BOOLEAN</div>
+                <div class="signature">write_tga (filename: STRING): BOOLEAN</div>
+                <div class="signature">write_jpg (filename: STRING; quality: INTEGER): BOOLEAN</div>
+
+                <h4>Disposal</h4>
+                <div class="signature">destroy</div>
+            </div>
+        </section>
+
+        <section id="examples">
+            <h2>Examples</h2>
+
+            <h3>Pixel Operations</h3>
+<pre><code><span class="comment">-- Set individual pixels</span>
+img.set_pixel (x, y, r, g, b, a)
+img.set_pixel_hex (x, y, 0xFFRRGGBB)
+
+<span class="comment">-- Get pixel color</span>
+p := img.pixel (x, y)  <span class="comment">-- Returns TUPLE [r, g, b, a: NATURAL_8]</span>
+
+<span class="comment">-- Fill operations</span>
+img.fill (r, g, b, a)
+img.fill_hex (0xAARRGGBB)
+img.fill_rect (x, y, width, height, r, g, b, a)</code></pre>
+
+            <h3>Image Manipulation</h3>
+<pre><code><span class="comment">-- Duplicate an image</span>
+copy := img.duplicate
+
+<span class="comment">-- Flip operations</span>
+img.flip_vertical
+img.flip_horizontal</code></pre>
+
+            <h3>Writing to Different Formats</h3>
+<pre><code>img.write_png (<span class="string">"output.png"</span>).do_nothing
+img.write_bmp (<span class="string">"output.bmp"</span>).do_nothing
+img.write_tga (<span class="string">"output.tga"</span>).do_nothing
+img.write_jpg (<span class="string">"output.jpg"</span>, 90).do_nothing  <span class="comment">-- Quality 1-100</span></code></pre>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 simple_* ecosystem. MIT License.</p>
+        <p>stb libraries by Sean Barrett are public domain (Unlicense/MIT).</p>
+        <p>
+            <a href="https://github.com/simple-eiffel/simple_stb">GitHub</a> |
+            <a href="https://simple-eiffel.github.io">Documentation</a>
+        </p>
+    </footer>
+</body>
+</html>

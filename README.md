@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/simple-eiffel/claude_eiffel_op_docs/main/artwork/LOGO.png" alt="simple_ library logo" width="400">
+</p>
+
 # simple_stb
 
-**[GitHub](https://github.com/simple-eiffel/simple_stb)**
+**[Documentation](https://simple-eiffel.github.io/simple_stb/)** | **[GitHub](https://github.com/simple-eiffel/simple_stb)**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Eiffel](https://img.shields.io/badge/Eiffel-25.02-blue.svg)](https://www.eiffel.org/)
@@ -10,12 +14,16 @@
 
 Part of the [Simple Eiffel](https://github.com/simple-eiffel) ecosystem.
 
+## Status
+
+**Production** - Core functionality complete, edge-case tests passing
+
 ## Features
 
 - **Image Loading** - PNG, JPEG, BMP, TGA, GIF, PSD, HDR, PIC, PNM
 - **Image Writing** - PNG, JPEG, BMP, TGA
 - **Pixel Manipulation** - Get/set pixels, fill operations
-- **Image Operations** - Copy, flip vertical/horizontal
+- **Image Operations** - Duplicate, flip vertical/horizontal
 - **Format Detection** - Check image validity without loading
 - **Hex Color Support** - 0xAARRGGBB and 0xRRGGBB formats
 
@@ -55,7 +63,7 @@ do
         img.fill_rect (10, 10, 50, 50, 255, 0, 0, 255)  -- Red rectangle
 
         -- Save in different format
-        img.write_png ("photo.png")
+        img.write_png ("photo.png").do_nothing
         img.destroy
     else
         print ("Error: " + img.error_message + "%N")
@@ -64,7 +72,7 @@ do
     -- Create new image
     img := stb.create_rgba (200, 100)
     img.fill_hex (0xFF3498DB)  -- Blue
-    img.write_png ("blue.png")
+    img.write_png ("blue.png").do_nothing
     img.destroy
 end
 ```
@@ -88,8 +96,8 @@ img.fill_rect (x, y, width, height, r, g, b, a)
 ## Image Operations
 
 ```eiffel
--- Copy
-copy := img.copy
+-- Duplicate
+copy := img.duplicate
 
 -- Flip
 img.flip_vertical
@@ -99,10 +107,10 @@ img.flip_horizontal
 ## Writing Formats
 
 ```eiffel
-img.write_png ("output.png")
-img.write_bmp ("output.bmp")
-img.write_tga ("output.tga")
-img.write_jpg ("output.jpg", 90)  -- Quality 1-100
+img.write_png ("output.png").do_nothing
+img.write_bmp ("output.bmp").do_nothing
+img.write_tga ("output.tga").do_nothing
+img.write_jpg ("output.jpg", 90).do_nothing  -- Quality 1-100
 ```
 
 ## API Classes
