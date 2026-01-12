@@ -440,6 +440,9 @@ feature -- Edge Case Tests
 
 	test_hex_color_boundaries
 			-- Test hex color values at extremes.
+			-- Note: set_pixel_hex treats colors < 0x01000000 as RGB-only,
+			-- defaulting alpha to 255 (opaque). To set truly transparent
+			-- pixels, use set_pixel directly with alpha = 0.
 		note
 			testing: "edge-case"
 		local
@@ -448,11 +451,18 @@ feature -- Edge Case Tests
 		do
 			img := stb.create_rgba (10, 10)
 
-			-- Minimum (transparent black)
-			img.set_pixel_hex (0, 0, 0x00000000)
+			-- Minimum RGB (black, defaults to opaque when < 0x01000000)
+			img.set_pixel_hex (0, 0, 0x000000)
 			p := img.pixel (0, 0)
-			assert ("hex min alpha", p.a = 0)
+			assert ("hex min rgb alpha defaults opaque", p.a = 255)
 			assert ("hex min rgb", p.r = 0 and p.g = 0 and p.b = 0)
+
+			-- Transparent black using explicit alpha (0x00RRGGBB format requires >= 0x01000000)
+			-- To set transparent, use set_pixel directly
+			img.set_pixel (0, 1, 0, 0, 0, 0)
+			p := img.pixel (0, 1)
+			assert ("direct transparent alpha", p.a = 0)
+			assert ("direct transparent rgb", p.r = 0 and p.g = 0 and p.b = 0)
 
 			-- Maximum (opaque white)
 			img.set_pixel_hex (1, 1, 0xFFFFFFFF)
