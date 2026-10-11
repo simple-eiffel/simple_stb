@@ -67,6 +67,29 @@ feature -- Creation Tests
 			assert ("still working after collection", img.is_valid and img.width = 16)
 		end
 
+	test_unicode_path
+			-- 1.2.0: a file name with characters beyond Latin-1 (an en dash, curly quotes) is
+			-- written, read for its size, and loaded back.
+		local
+			img, back: STB_IMAGE
+			l_path: STRING_32
+			l_file: RAW_FILE
+		do
+			l_path := {STRING_32} "unicode %/8211/ %/8220/quoted%/8221/ test.png"
+			img := stb.create_rgba (9, 7)
+			img.set_pixel (2, 3, 10, 20, 30, 255)
+			assert ("written", img.write_png (l_path))
+			create l_file.make_with_name (l_path)
+			assert ("file has the Unicode name", l_file.exists)
+			assert ("info reads it", stb.image_info (l_path).width = 9)
+			back := stb.load_rgba (l_path)
+			assert ("loads back", back.is_valid and back.height = 7)
+			assert ("same pixel", back.pixel (2, 3).g = 20)
+			img.destroy
+			back.destroy
+			l_file.delete
+		end
+
 	test_one_channel_image
 			-- simple_image keeps masks as 1-channel images: created, stride = width, written as PNG and JPEG.
 		local

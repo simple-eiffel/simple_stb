@@ -21,6 +21,11 @@
  * "stbi_load already defined". Each file keeps a private copy instead (stb's own option). */
 #define STB_IMAGE_STATIC
 #define STB_IMAGE_WRITE_STATIC
+
+/* File names arrive as UTF-8 (STB_IMAGE and SIMPLE_STB convert them); on Windows stb then
+ * opens them with _wfopen, so paths with any Unicode character work (1.2.0). */
+#define STBI_WINDOWS_UTF8
+#define STBIW_WINDOWS_UTF8
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 

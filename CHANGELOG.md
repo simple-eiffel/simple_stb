@@ -2,6 +2,14 @@
 
 All notable changes to simple_stb will be documented in this file.
 
+## [1.2.0] - 2026-10-11
+
+### Fixed
+- File names may contain any Unicode character. Paths were narrowed with to_string_8, so a
+  name beyond Latin-1 (an en dash, curly quotes - common in video titles) raised a
+  precondition; now they go to stb as UTF-8 and stb opens them with _wfopen
+  (STBI_WINDOWS_UTF8, STBIW_WINDOWS_UTF8). Test: write, info and load through such a name.
+
 ## [1.1.0] - 2026-10-11
 
 ### Added
