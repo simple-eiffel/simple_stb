@@ -139,6 +139,14 @@ feature {NONE} -- Implementation
 			print (" test_aspect_ratios... ")
 			a_tests.test_aspect_ratios
 			print ("PASS%N")
+
+			print (" test_collector_frees_images... ")
+			a_tests.test_collector_frees_images
+			print ("PASS%N")
+
+			print (" test_one_channel_image... ")
+			a_tests.test_one_channel_image
+			print ("PASS%N")
 		end
 
 end

@@ -2,6 +2,20 @@
 
 All notable changes to simple_stb will be documented in this file.
 
+## [1.1.0] - 2026-10-11
+
+### Added
+- STB_IMAGE frees its pixels when the garbage collector reclaims it (DISPOSABLE); `destroy`
+  still frees them at once, and a destroyed image is not freed twice. simple_image keeps its
+  images in STB_IMAGE and must not leak when a caller forgets `destroy`.
+- Tests: the collector frees 200 undestroyed 512x512 images; a 1-channel image (the masks
+  simple_image keeps) has stride = width and writes PNG and JPEG.
+
+### Fixed
+- The stb implementation is now static (STB_IMAGE_STATIC, STB_IMAGE_WRITE_STATIC). With
+  external linkage, any client whose classes land in two generated C files (simple_image)
+  failed to link: LNK2005 "stbi_load already defined".
+
 ## [1.0.0] - 2025-12-29
 
 ### Added
