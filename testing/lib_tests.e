@@ -46,6 +46,41 @@ feature -- Creation Tests
 			assert ("destroyed", not img.is_valid)
 		end
 
+	test_collector_frees_images
+			-- 1.1.0: images left undestroyed are freed by the garbage collector (dispose), and an
+			-- image destroyed by hand is not freed twice.
+		local
+			img: STB_IMAGE
+			l_mem: MEMORY
+			i: INTEGER
+		do
+			from i := 1 until i > 200 loop
+				img := stb.create_rgba (512, 512)
+				assert ("valid " + i.out, img.is_valid)
+				i := i + 1
+			end
+			img := stb.create_rgba (8, 8)
+			img.destroy
+			create l_mem
+			l_mem.full_collect
+			img := stb.create_rgba (16, 16)
+			assert ("still working after collection", img.is_valid and img.width = 16)
+		end
+
+	test_one_channel_image
+			-- simple_image keeps masks as 1-channel images: created, stride = width, written as PNG and JPEG.
+		local
+			img: STB_IMAGE
+		do
+			img := stb.create_image (64, 32, 1)
+			assert ("valid", img.is_valid and img.channels = 1)
+			assert ("stride is the width", img.stride = 64)
+			assert ("png written", img.write_png ("one_channel_test.png"))
+			assert ("jpg written", img.write_jpg ("one_channel_test.jpg", 90))
+			assert ("png reads back as 1 channel", stb.image_info ("one_channel_test.png").channels = 1)
+			img.destroy
+		end
+
 	test_create_rgba_image
 			-- Test creating an RGBA image.
 		note

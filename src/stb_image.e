@@ -22,7 +22,8 @@ note
 					-- Save
 					img.write_png ("output.png")
 
-					-- Always destroy when done
+					-- Destroy when done to free the pixels at once; otherwise they
+					-- are freed when the garbage collector reclaims the object.
 					img.destroy
 				end
 			end
@@ -33,6 +34,9 @@ note
 
 class
 	STB_IMAGE
+
+inherit
+	DISPOSABLE
 
 create
 	make_from_pointer
@@ -340,6 +344,17 @@ feature -- Disposal
 			end
 		ensure
 			destroyed: handle = default_pointer
+		end
+
+feature {NONE} -- Removal
+
+	dispose
+			-- Free the pixels if `destroy' was not called (touches only this object's own C block).
+		do
+			if handle /= default_pointer then
+				c_free_image (handle)
+				handle := default_pointer
+			end
 		end
 
 feature {NONE} -- C Externals
