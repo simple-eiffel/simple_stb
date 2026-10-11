@@ -15,7 +15,12 @@
 #ifndef SIMPLE_STB_H
 #define SIMPLE_STB_H
 
-/* Implementation defines - only in ONE compilation unit */
+/* Implementation defines. Every generated C file that uses an inline external includes this
+ * header, so the implementation must be static: with external linkage, two such files (any
+ * client bigger than simple_stb's own tests, e.g. simple_image) fail to link with LNK2005
+ * "stbi_load already defined". Each file keeps a private copy instead (stb's own option). */
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_WRITE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 
