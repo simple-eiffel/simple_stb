@@ -292,7 +292,7 @@ feature -- Writing
 		local
 			l_filename: C_STRING
 		do
-			create l_filename.make (a_filename.to_string_8)
+			create l_filename.make (utf_8_path (a_filename))
 			Result := c_write_png (l_filename.item, handle) /= 0
 		end
 
@@ -304,7 +304,7 @@ feature -- Writing
 		local
 			l_filename: C_STRING
 		do
-			create l_filename.make (a_filename.to_string_8)
+			create l_filename.make (utf_8_path (a_filename))
 			Result := c_write_bmp (l_filename.item, handle) /= 0
 		end
 
@@ -316,7 +316,7 @@ feature -- Writing
 		local
 			l_filename: C_STRING
 		do
-			create l_filename.make (a_filename.to_string_8)
+			create l_filename.make (utf_8_path (a_filename))
 			Result := c_write_tga (l_filename.item, handle) /= 0
 		end
 
@@ -329,7 +329,7 @@ feature -- Writing
 		local
 			l_filename: C_STRING
 		do
-			create l_filename.make (a_filename.to_string_8)
+			create l_filename.make (utf_8_path (a_filename))
 			Result := c_write_jpg (l_filename.item, handle, a_quality) /= 0
 		end
 
@@ -355,6 +355,17 @@ feature {NONE} -- Removal
 				c_free_image (handle)
 				handle := default_pointer
 			end
+		end
+
+feature {NONE} -- Paths
+
+	utf_8_path (a_path: READABLE_STRING_GENERAL): STRING_8
+			-- `a_path' as UTF-8 bytes: the header turns on stb's Windows UTF-8 file names
+			-- (STBI_WINDOWS_UTF8, STBIW_WINDOWS_UTF8), so any Unicode path opens.
+		local
+			l_utf: UTF_CONVERTER
+		do
+			Result := l_utf.string_32_to_utf_8_string_8 (a_path.to_string_32)
 		end
 
 feature {NONE} -- C Externals

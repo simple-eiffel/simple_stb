@@ -93,7 +93,7 @@ feature -- Loading
 		local
 			l_filename: C_STRING
 		do
-			create l_filename.make (a_filename.to_string_8)
+			create l_filename.make (utf_8_path (a_filename))
 			create Result.make_from_pointer (c_load_image (l_filename.item, a_channels))
 			if not Result.is_valid then
 				last_error := Result.error_message
@@ -156,7 +156,7 @@ feature -- Info (without loading)
 			l_width, l_height, l_channels: INTEGER
 			l_ok: INTEGER
 		do
-			create l_filename.make (a_filename.to_string_8)
+			create l_filename.make (utf_8_path (a_filename))
 			l_ok := c_get_image_info (l_filename.item, $l_width, $l_height, $l_channels)
 			Result := [l_width, l_height, l_channels, l_ok /= 0]
 		end
@@ -168,7 +168,7 @@ feature -- Info (without loading)
 		local
 			l_filename: C_STRING
 		do
-			create l_filename.make (a_filename.to_string_8)
+			create l_filename.make (utf_8_path (a_filename))
 			Result := c_is_valid_image (l_filename.item) /= 0
 		end
 
@@ -212,6 +212,17 @@ feature -- Status
 			-- Did last operation fail?
 		do
 			Result := not last_error.is_empty
+		end
+
+feature {NONE} -- Paths
+
+	utf_8_path (a_path: READABLE_STRING_GENERAL): STRING_8
+			-- `a_path' as UTF-8 bytes: the header turns on stb's Windows UTF-8 file names
+			-- (STBI_WINDOWS_UTF8, STBIW_WINDOWS_UTF8), so any Unicode path opens.
+		local
+			l_utf: UTF_CONVERTER
+		do
+			Result := l_utf.string_32_to_utf_8_string_8 (a_path.to_string_32)
 		end
 
 feature {NONE} -- C Externals

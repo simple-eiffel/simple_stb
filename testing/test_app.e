@@ -144,6 +144,10 @@ feature {NONE} -- Implementation
 			a_tests.test_collector_frees_images
 			print ("PASS%N")
 
+			print (" test_unicode_path... ")
+			a_tests.test_unicode_path
+			print ("PASS%N")
+
 			print (" test_one_channel_image... ")
 			a_tests.test_one_channel_image
 			print ("PASS%N")
