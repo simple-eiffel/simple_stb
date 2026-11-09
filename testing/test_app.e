@@ -34,6 +34,10 @@ feature {NONE} -- Implementation
 			a_tests.test_create_rgb_image
 			print ("PASS%N")
 
+			print (" test_load_from_memory... ")
+			a_tests.test_load_from_memory
+			print ("PASS%N")
+
 			print (" test_create_rgba_image... ")
 			a_tests.test_create_rgba_image
 			print ("PASS%N")
