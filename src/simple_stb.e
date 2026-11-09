@@ -104,6 +104,23 @@ feature -- Loading
 			result_exists: Result /= Void
 		end
 
+	load_rgba_from_memory (a_bytes: MANAGED_POINTER): STB_IMAGE
+			-- Decode `a_bytes' (the whole of a PNG, JPEG, GIF, BMP, TGA, PSD, HDR or PNM file) as
+			-- RGBA (4 channels); `a_bytes' is not kept.
+		require
+			has_bytes: a_bytes.count > 0
+		do
+			create Result.make_from_pointer (c_load_image_from_memory (a_bytes.item, a_bytes.count, Channels_rgba))
+			if not Result.is_valid then
+				last_error := Result.error_message
+			else
+				last_error := ""
+			end
+		ensure
+			result_exists: Result /= Void
+			rgba: Result.is_valid implies Result.channels = Channels_rgba
+		end
+
 feature -- Creation
 
 	create_image (a_width, a_height, a_channels: INTEGER): STB_IMAGE
@@ -230,6 +247,11 @@ feature {NONE} -- C Externals
 	c_load_image (a_filename: POINTER; a_channels: INTEGER): POINTER
 		external "C inline use %"simple_stb.h%""
 		alias "return stb_load_image((const char*)$a_filename, $a_channels);"
+		end
+
+	c_load_image_from_memory (a_bytes: POINTER; a_count, a_channels: INTEGER): POINTER
+		external "C inline use %"simple_stb.h%""
+		alias "return stb_load_image_from_memory((const unsigned char*)$a_bytes, $a_count, $a_channels);"
 		end
 
 	c_create_image (a_width, a_height, a_channels: INTEGER): POINTER

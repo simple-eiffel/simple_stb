@@ -67,6 +67,28 @@ feature -- Creation Tests
 			assert ("still working after collection", img.is_valid and img.width = 16)
 		end
 
+	test_load_from_memory
+			-- 2026-11-09: a JPEG file's bytes decode in memory as RGBA, size and color kept.
+		local
+			img, back: STB_IMAGE
+			l_file: RAW_FILE
+			l_bytes: MANAGED_POINTER
+		do
+			img := stb.create_rgb (12, 10)
+			img.fill (200, 40, 40, 255)
+			assert ("written", img.write_jpg ("memory_test.jpg", 95))
+			create l_file.make_open_read ("memory_test.jpg")
+			create l_bytes.make (l_file.count)
+			l_file.read_to_managed_pointer (l_bytes, 0, l_file.count)
+			l_file.close
+			back := stb.load_rgba_from_memory (l_bytes)
+			assert ("decoded", back.is_valid and back.width = 12 and back.height = 10 and back.channels = 4)
+			assert ("red kept", (back.pixel (5, 5).r.to_integer_32 - 200).abs <= 6 and back.pixel (5, 5).a = 255)
+			img.destroy
+			back.destroy
+			l_file.delete
+		end
+
 	test_unicode_path
 			-- 1.2.0: a file name with characters beyond Latin-1 (an en dash, curly quotes) is
 			-- written, read for its size, and loaded back.
