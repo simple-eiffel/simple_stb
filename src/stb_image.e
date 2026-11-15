@@ -296,6 +296,27 @@ feature -- Writing
 			Result := c_write_png (l_filename.item, handle) /= 0
 		end
 
+	png_bytes: MANAGED_POINTER
+			-- The image encoded as a PNG file's bytes, in memory (empty on failure): what
+			-- `write_png' would write, for a program that hands PNG data on rather than a file.
+		require
+			valid: is_valid
+		local
+			l_count: INTEGER
+			l_bytes: POINTER
+		do
+			l_bytes := c_png_bytes (handle, $l_count)
+			if l_bytes /= default_pointer and l_count > 0 then
+				create Result.make (l_count)
+				Result.item.memory_copy (l_bytes, l_count)
+			else
+				create Result.make (0)
+			end
+			c_free_bytes (l_bytes)
+		ensure
+			png_signature: Result.count >= 8 implies (Result.read_natural_8 (0) = 0x89 and Result.read_natural_8 (1) = 0x50)
+		end
+
 	write_bmp (a_filename: READABLE_STRING_GENERAL): BOOLEAN
 			-- Write image to BMP file.
 		require
@@ -438,6 +459,16 @@ feature {NONE} -- C Externals
 	c_write_png (a_filename, a_img: POINTER): INTEGER
 		external "C inline use %"simple_stb.h%""
 		alias "return stb_write_png((const char*)$a_filename, (stb_image_data*)$a_img);"
+		end
+
+	c_png_bytes (a_img, a_count: POINTER): POINTER
+		external "C inline use %"simple_stb.h%""
+		alias "return stb_png_bytes((stb_image_data*)$a_img, (int*)$a_count);"
+		end
+
+	c_free_bytes (a_bytes: POINTER)
+		external "C inline use %"simple_stb.h%""
+		alias "stb_free_bytes((unsigned char*)$a_bytes);"
 		end
 
 	c_write_bmp (a_filename, a_img: POINTER): INTEGER
