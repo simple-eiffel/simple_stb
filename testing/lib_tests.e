@@ -89,6 +89,26 @@ feature -- Creation Tests
 			l_file.delete
 		end
 
+	test_png_bytes
+			-- 1z-a: an image encoded as PNG in memory decodes back to the same size and pixels.
+		local
+			img, back: STB_IMAGE
+			l_bytes: MANAGED_POINTER
+		do
+			img := stb.create_rgba (9, 7)
+			img.fill (10, 200, 30, 128)
+			img.set_pixel (3, 4, 250, 5, 6, 255)
+			l_bytes := img.png_bytes
+			assert ("has bytes", l_bytes.count > 8)
+			assert ("PNG signature", l_bytes.read_natural_8 (0) = 0x89 and l_bytes.read_natural_8 (1) = 0x50 and l_bytes.read_natural_8 (2) = 0x4E and l_bytes.read_natural_8 (3) = 0x47)
+			back := stb.load_rgba_from_memory (l_bytes)
+			assert ("decoded", back.is_valid and back.width = 9 and back.height = 7)
+			assert ("fill kept exactly", back.pixel (0, 0).r = 10 and back.pixel (0, 0).g = 200 and back.pixel (0, 0).b = 30 and back.pixel (0, 0).a = 128)
+			assert ("pixel kept exactly", back.pixel (3, 4).r = 250 and back.pixel (3, 4).a = 255)
+			img.destroy
+			back.destroy
+		end
+
 	test_unicode_path
 			-- 1.2.0: a file name with characters beyond Latin-1 (an en dash, curly quotes) is
 			-- written, read for its size, and loaded back.

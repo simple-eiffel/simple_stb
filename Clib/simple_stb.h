@@ -190,6 +190,19 @@ static int stb_write_png_raw(const char* filename, int width, int height, int ch
     return stbi_write_png(filename, width, height, channels, data, stride);
 }
 
+/* Encode image as a PNG file's bytes, in memory: a buffer from malloc (free it with
+ * stb_free_bytes) and its length in *out_len; NULL on failure. The same encoder as
+ * stb_write_png, so the bytes are the ones a file would hold. */
+static unsigned char* stb_png_bytes(stb_image_data* img, int* out_len) {
+    if (!img || !img->data || !out_len) return NULL;
+    return stbi_write_png_to_mem(img->data, img->stride, img->width, img->height, img->channels, out_len);
+}
+
+/* Free a buffer stb_png_bytes made. */
+static void stb_free_bytes(unsigned char* bytes) {
+    if (bytes) STBIW_FREE(bytes);
+}
+
 /* ============ PIXEL ACCESS ============ */
 
 /* Get pixel at (x, y). Returns pointer to pixel data (RGB or RGBA). */
